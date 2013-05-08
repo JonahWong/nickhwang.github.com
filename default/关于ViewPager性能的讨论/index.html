@@ -2,7 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>首页</title>
+    <title>关于ViewPager性能的讨论</title>
+  
+    <meta name="description" content="对ViewPager性能优化的讨论">
   
     <meta name="author" content="Koruk Hwang">
 
@@ -77,30 +79,15 @@
     <div class="container">
 
       <div class="content">
-        
-<div class="page-header">
-  <h1>首页 </h1>
+        <div class="page-header">
+  <h1>关于ViewPager性能的讨论 </h1>
 </div>
 
 <div class="row">
-  <div class="span12">
-    
-<h2>Gor已经为了编译成功了</h2>
-<p>
-  这段文字位于pages/index.html ,使用以下命令获取帮助或访问gor官网
-</p>
-<pre><code>$ gor help</code></pre>
-
-
-<h2>最近更新</h2>
-
-
-<div class="post">
-  <h3 class="title"><a href="/Android/%E5%85%B3%E4%BA%8EViewPager%E6%80%A7%E8%83%BD%E7%9A%84%E8%AE%A8%E8%AE%BA/">关于ViewPager性能的讨论</a> <span class="date">2013-05-08</span></h3>
-
-  <blockquote>
-<p>[@王中晟edison][]
-发现一个小trick&hellip;<code>ViewPager</code>的<code>setOffScreeLimit</code>, 如果小的话页面内使用<code>requestLayout</code>的<code>Animation</code>就会很快，如果大的话页面之间的<code>Animation</code>就会快，所以如果我们根据动画的需要动态改变这个数字的话就会最大程度的优化整个App的动画！ [@KorukH][] [@developerWorks][]
+  <div class="span8">
+    <blockquote>
+<p><a href="http://weibo.com/wzsddtc" title="@王中晟edison">@王中晟edison</a>
+发现一个小trick&hellip;<code>ViewPager</code>的<code>setOffScreeLimit</code>, 如果小的话页面内使用<code>requestLayout</code>的<code>Animation</code>就会很快，如果大的话页面之间的<code>Animation</code>就会快，所以如果我们根据动画的需要动态改变这个数字的话就会最大程度的优化整个App的动画！ <a href="http://weibo.com/n/KorukH" title="@KorukH">@KorukH</a> <a href="http://weibo.com/n/developerWorks" title="@developerWorks">@developerWorks</a>
 &gt; KorukH：这个方法应该是设置系统为你缓存页面（<code>page</code>）的，缓存的页面不会重新<code>recreate</code>，所以速度会更快，在重写<code>ViewPager</code>的时候用的比较多。 <a href="http://t.cn/zTYYJSP">http://t.cn/zTYYJSP</a>
 &gt; &gt;王中晟edison：是的，但是大家没有想到的是反过来使用这个属性来优化页面里面的动画。因为页面同时在缓存得越多，<code>requestLayout()</code>就会慢。
 &gt;&gt;&gt;KorukH: 这个倒不知道，有没有文章介绍？缓存会影响<code>requestLayout</code>… 官方文档好像没提到这方面
@@ -146,14 +133,67 @@
 </blockquote>
 </blockquote>
 </blockquote>
+
+<p><a href="http://weibo.com/billytsuiƒƒ">崔海斌DX</a>
+应该说的是<code>setOffscreenPageLimit</code>吧，此语句主要是用来设置当前页面左右的页面限制的，超出此范围的<code>Fragment</code>会被杀掉，因此，当此限制增加的时候，<code>Fragment</code>会被更多创建出来并且保持不被杀掉，因此当滑动时因为已经创建了，动画就更加流畅。但当有大量复杂页面存在时，会耗费大量资源，因此使用要小心</p>
 </blockquote>
 
+<pre><code>2013年5月6日 下午1:20
+</code></pre>
 
-  <div class="more">
-    <a href="/Android/%E5%85%B3%E4%BA%8EViewPager%E6%80%A7%E8%83%BD%E7%9A%84%E8%AE%A8%E8%AE%BA/" class="btn">read more..</a>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <ul>
+          
+          
+            <li class="prev disabled"><a>&larr; Previous</a></li>
+          
+
+            <li><a href="/archive">Archive</a></li>
+
+          
+          
+            <li class="next disabled"><a>Next &rarr;</a>
+          
+        </ul>
+      </ul>
+    </div>
+    <hr>
+    
+<div id="disqus_thread"></div>
+<script>
+    var disqus_developer = 1;
+    var disqus_shortname = 'jekyllbootstrap'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
   </div>
-</div>
-
+  
+  <div class="span4">
+    <h4>Published</h4>
+    <div class="date"><span>2013-05-08</span></div>
+    <br>
+    <h4>Categories</h4>
+    <ul class="tag_box">
+    
+      <li>
+  <a href="/categories/#default-ref">default <span>1</span></a>
+</li>
+    
+    </ul>
+    <br>
+    <h4>Tags</h4>
+    <ul class="tag_box">
+    
+    </ul>
   </div>
 </div>
 
