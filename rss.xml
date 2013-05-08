@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+  <channel>
+    <title>Koruk的Android技术之旅</title>
+    <link>http://sample.com</link>
+    <pubDate>2013-05-08 01:59:41 +0800</pubDate>
+    <item>
+      <title>recent</title>
+      <link>http://sample.com/default/recent/</link>
+      <pubDate>2013-05-08 12:00:00 +0800</pubDate>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;http://weibo.com/wzsddtc&#34; title=&#34;@王中晟edison&#34;&gt;@王中晟edison&lt;/a&gt;
+发现一个小trick&amp;hellip;&lt;code&gt;ViewPager&lt;/code&gt;的&lt;code&gt;setOffScreeLimit&lt;/code&gt;, 如果小的话页面内使用&lt;code&gt;requestLayout&lt;/code&gt;的&lt;code&gt;Animation&lt;/code&gt;就会很快，如果大的话页面之间的&lt;code&gt;Animation&lt;/code&gt;就会快，所以如果我们根据动画的需要动态改变这个数字的话就会最大程度的优化整个App的动画！ &lt;a href=&#34;http://weibo.com/n/KorukH&#34; title=&#34;@KorukH&#34;&gt;@KorukH&lt;/a&gt; &lt;a href=&#34;http://weibo.com/n/developerWorks&#34; title=&#34;@developerWorks&#34;&gt;@developerWorks&lt;/a&gt;
+&amp;gt; KorukH：这个方法应该是设置系统为你缓存页面（&lt;code&gt;page&lt;/code&gt;）的，缓存的页面不会重新&lt;code&gt;recreate&lt;/code&gt;，所以速度会更快，在重写&lt;code&gt;ViewPager&lt;/code&gt;的时候用的比较多。 &lt;a href=&#34;http://t.cn/zTYYJSP&#34;&gt;http://t.cn/zTYYJSP&lt;/a&gt;
+&amp;gt; &amp;gt;王中晟edison：是的，但是大家没有想到的是反过来使用这个属性来优化页面里面的动画。因为页面同时在缓存得越多，&lt;code&gt;requestLayout()&lt;/code&gt;就会慢。
+&amp;gt;&amp;gt;&amp;gt;KorukH: 这个倒不知道，有没有文章介绍？缓存会影响&lt;code&gt;requestLayout&lt;/code&gt;… 官方文档好像没提到这方面
+&amp;gt;&amp;gt;&amp;gt;&amp;gt;王中晟edison：Romain Guy在这里有说过。因为所有Fragment的Views都会在&lt;code&gt;ViewPager&lt;/code&gt;里面，所以如果你缓存了以后&lt;code&gt;requestLayout&lt;/code&gt;会在所有的页面上都call.你页面里面的&lt;code&gt;requestLayout&lt;/code&gt;就会出现。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;我是那天在把一个&lt;code&gt;TabActivity&lt;/code&gt;转换成&lt;code&gt;FragmentActivity&lt;/code&gt;时，发现里面的一个&lt;code&gt;Animation&lt;/code&gt;突然变得很慢了发现的，如果只在有&lt;code&gt;requestLayout&lt;/code&gt;()的&lt;code&gt;Animation&lt;/code&gt;的那个页面将缓存变低（&lt;code&gt;onPageScrollState&lt;/code&gt;是Idle时），而在其他页面将缓存变高，就可以在大部分地方都Smooth了。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Romain Guy&amp;rsquo;s StackOverflow Answer: &lt;a href=&#34;http://t.cn/zTYT6pr&#34;&gt;http://t.cn/zTYT6pr&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;KorukH：回复@王中晟edison:我不敢说听明白了… “只在有requestLayout()的Animation的那个页面将缓存变低”这句什么意思？idle状态的时候ViewPager就停止滚动了吧，还是说有动画的那个页面不可见时将缓存调高，可见时调低？&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;王中晟edison：回复@KorukH: 假设这么个情形：你有4个Tabs, Tab#4有用requestLayout的动画。如果你把setOffScreenPageLimit(4)的话，4个Tabs之间的移动会非常圆滑。但是Tab #4上面的动画会很慢。如果你把setOffScreenPageLimit(1)得话，4个页面之间的移动会很卡，但是Tab#4上面的就很顺畅了。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;王中晟edison：回复@KorukH: 所以如果你在你的onPageChangedListener上通过知道用户在哪个界面来改变的话，就最好了。也就是说，用户到Tab #4的时候我们setOffScreenPageLimit(1)，但是其他任何页面上都setOffScreenPageLimit(4),这样页面1-&amp;gt;2-&amp;gt;3-&amp;gt;4之间的滑动还是顺畅的，只有3&amp;lt;-4之间的会卡一点，#4上面的页会顺畅&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;王中晟edison：哦，当然，最好是在onPageScrolledChanged Idle得时候，不然可能会在滑动时有意想不到的NPE.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;KorukH：回复@王中晟edison:是不是有点太hack的感觉了。不能像Romain Guy说的用其他方法？另外idle的时候界面上显示的就是滑动结束只有一个page吧，不是说用户正在滑动中？
+&amp;gt; 王中晟edison(纽约工程师):回复@KorukH: 话说Romain Guy..我的搭档去年在Google I/O见过他，说他很臭屁和牛逼，所以我们想问核心团队问题现在一般都是通过Android Developer Advocate的那帮人，他们很好心，有什么难解的问题都可以问他们，他们解决问题的效率有时候要比在stackoverflow上高，特别是device特别的问题，他们都遇过&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://weibo.com/billytsuiƒƒ&#34;&gt;崔海斌DX&lt;/a&gt;
+应该说的是&lt;code&gt;setOffscreenPageLimit&lt;/code&gt;吧，此语句主要是用来设置当前页面左右的页面限制的，超出此范围的&lt;code&gt;Fragment&lt;/code&gt;会被杀掉，因此，当此限制增加的时候，&lt;code&gt;Fragment&lt;/code&gt;会被更多创建出来并且保持不被杀掉，因此当滑动时因为已经创建了，动画就更加流畅。但当有大量复杂页面存在时，会耗费大量资源，因此使用要小心&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;2013年5月6日 下午1:20
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    <item>
+      <title>你的第一篇博客</title>
+      <link>http://sample.com/2012/new-born.html</link>
+      <pubDate>2012-12-22 12:00:00 +0800</pubDate>
+      <description>&lt;h1&gt;感谢你使用Gor编写博客&lt;/h1&gt;
+
+&lt;h2&gt;本文位于 posts/first-blog.md , 你可以任何删掉,修改这个文件&lt;/h2&gt;
+
+&lt;p&gt;文件开头是当前文章的元数据&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;date为自动生成, 当然,你可以修改,这是你的自由&lt;/li&gt;
+&lt;li&gt;permalink 可以是固定地址,也可以由gor为你自动生成&lt;/li&gt;
+&lt;li&gt;categories 就是分类, 可以多个&lt;/li&gt;
+&lt;li&gt;tags 同理,多个标签也是很常见的&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;请确保文件使用UTF8 without BOM编码&lt;/p&gt;
+
+&lt;h2&gt;你可以通过执行下面的语句来新建一篇博客:&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;gor post 文章标题
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;编译你的博客,并预览之&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;gor compile #编译
+gor http
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后打开你的浏览器,访问 &lt;a href=&#34;http://127.0.0.1:8080&#34;&gt;http://127.0.0.1:8080&lt;/a&gt; 来预览&lt;/p&gt;
+
+&lt;h2&gt;你将使用Markdown来编写博客&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://wowubuntu.com/markdown/&#34;&gt;Markdown 语法中文版&lt;/a&gt; 能让你快速入门其语法&lt;/p&gt;
+
+&lt;p&gt;相信&lt;a href=&#34;http://markdownpad.com&#34;&gt;MarkdownPad&lt;/a&gt;或&lt;a href=&#34;http://code.google.com/p/liteide/&#34;&gt;liteide&lt;/a&gt;会是你的编写博客的好帮手&lt;/p&gt;
+
+&lt;h2&gt;如果你打算部署到github的pages上&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;申请github帐户&lt;/li&gt;
+&lt;li&gt;新建一个库 username.github.com 即你的用户名命名的地址&lt;/li&gt;
+&lt;li&gt;将compiled目录,作为根路径,提交上去github.com上&lt;/li&gt;
+&lt;li&gt;稍等几分钟, 你即可通过 &lt;a href=&#34;http://username.github.com&#34;&gt;http://username.github.com&lt;/a&gt; 访问到&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2&gt;附上git教程 &lt;a href=&#34;http://gitbook.liuhui998.com/&#34;&gt;GitBook中文版&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;一般来说,你只需要几个简单的git命令就足以应付大部分需求(仅示例)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone git://github.com/wendal/wendal.net.git
+git add -A
+git commit -m &amp;quot;...&amp;quot;
+git pull
+git push
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;用gor编写博客将会是一件很开心的事,如果有任何意见或建议,欢迎到 &lt;a href=&#34;http://github.com/wendal/gor&#34;&gt;gor的官网&lt;/a&gt; 提交issue&lt;/h2&gt;
+
+&lt;h1&gt;祝你使用愉快&lt;/h1&gt;
+</description>
+    </item>
+  </channel>
+</rss>
